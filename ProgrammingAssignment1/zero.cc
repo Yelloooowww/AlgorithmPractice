@@ -1,38 +1,26 @@
 #include<iostream>
+#include<iomanip>
 using namespace std;
 
-void print_Maxtrix(int *A,int n){
-  for(int i=0;i<n;i++){
-    for(int j=0;j<n;j++){
-      cout<<*(A+i*n+j)<<"("<< (A+i*n+j)<<")"<<" ";
-    }
-    cout<<endl;
-  }
-}
+
 
 void add(int *A,int *B,int *C,int size){
   for(int i=0;i<size;i++){
     *(C+i)= *(A+i)+ *(B+i);
-    cout<<"add:"<< *(A+i)<<"+"<<*(B+i)<<"="<< *(C+i)<<endl;
   }
 }
 void sub(int *A,int *B,int *C,int size){
   for(int i=0;i<size;i++){
     *(C+i)= *(A+i)- *(B+i);
-    cout<<"sub:"<< *(A+i)<<"-"<<*(B+i)<<"="<< *(C+i)<<endl;
   }
 }
 
 
 
 void multiply(int *A,int *B,int *C,int n){
-  cout<<"START multiply~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~n="<<n<<endl;
-  print_Maxtrix(A,n);
-  print_Maxtrix(B,n);
-  cout<<"START multiply~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~n="<<n<<endl;
+
   if(n<=1){
     *C = (*A)*(*B);
-    cout<<"*C="<<*C<<"="<<(*A)<<"*"<<(*B)<<endl;
     return;
   }else if(n>1){
     int M1[n*n/4];
@@ -85,50 +73,44 @@ void multiply(int *A,int *B,int *C,int n){
       }
     }
 
-    // for(int i=0;i<(n*n/4);i++){
-    //   cout<<A11[i]<<"? ";
-    //   cout<<A12[i]<<"? ";
-    //   cout<<A21[i]<<"? ";
-    //   cout<<A22[i]<<"? ";
-    //   cout<<endl;
-    // }
+
 
     //make M1~M7
-    cout<<"  M1=(A11+A22)(B11+B22)"<<endl;
+    // cout<<"  M1=(A11+A22)(B11+B22)"<<endl;
     add(A11,A22,tmp1,n*n/4);
     add(B11,B22,tmp2,n*n/4);
     multiply(tmp1,tmp2,M1,n/2);
-    cout<<"  M2=(A21+A22)B11"<<endl;
+    // cout<<"  M2=(A21+A22)B11"<<endl;
     add(A21,A22,tmp1,n*n/4);
     multiply(tmp1,B11,M2,n/2);
-    cout<<"  M3=A11(B12-B22)"<<endl;
+    // cout<<"  M3=A11(B12-B22)"<<endl;
     sub(B12,B22,tmp1,n*n/4);
     multiply(A11,tmp1,M3,n/2);
-    cout<<"  M4=A22(B21-B11)"<<endl;
+    // cout<<"  M4=A22(B21-B11)"<<endl;
     sub(B21,B11,tmp1,n*n/4);
     multiply(A22,tmp1,M4,n/2);
-    cout<<"  M5=(A11+A12)B22"<<endl;
+    // cout<<"  M5=(A11+A12)B22"<<endl;
     add(A11,A12,tmp1,n*n/4);
     multiply(tmp1,B22,M5,n/2);
-    cout<<"  M6=(A21-A11)(B11+B12)"<<endl;
+    // cout<<"  M6=(A21-A11)(B11+B12)"<<endl;
     sub(A21,A11,tmp1,n*n/4);
     add(B11,B12,tmp2,n*n/4);
     multiply(tmp1,tmp2,M6,n/2);
-    cout<<"  M7=(A12-A22)(B21+B22)"<<endl;
+    // cout<<"  M7=(A12-A22)(B21+B22)"<<endl;
     sub(A12,A22,tmp1,n*n/4);
     add(B21,B22,tmp2,n*n/4);
     multiply(tmp1,tmp2,M7,n/2);
 
     //make C11 C12 C21 C22
-    cout<<"   C11=M1+M4-M5+M7"<<endl;
+    // cout<<"   C11=M1+M4-M5+M7"<<endl;
     add(M1,M4,tmp1,n*n/4);
     sub(tmp1,M5,tmp2,n*n/4);
     add(tmp2,M7,C11,n*n/4);
-    cout<<"   C12=M3+M5"<<endl;
+    // cout<<"   C12=M3+M5"<<endl;
     add(M3,M5,C12,n*n/4);
-    cout<<"   C21=M2+M4"<<endl;
+    // cout<<"   C21=M2+M4"<<endl;
     add(M2,M4,C21,n*n/4);
-    cout<<"   C22=M1-M2+M3+M6"<<endl;
+    // cout<<"   C22=M1-M2+M3+M6"<<endl;
     sub(M1,M2,tmp1,n*n/4);
     add(tmp1,M3,tmp2,n*n/4);
     add(tmp2,M6,C22,n*n/4);
@@ -148,30 +130,103 @@ void multiply(int *A,int *B,int *C,int n){
       }
     }
 
-  }//else if(n>1)
+  }
 
-
-
-  print_Maxtrix(C,n);
 }
 
+void Strassen(int *A,int *B,int *C,int M,int N,int K){
+  int Z=1;//2^0
+  while (Z<max(max(M,N),K)) {
+    Z*=2;
+  }
+
+  int AA[Z][Z],BB[Z][Z],CC[Z][Z];
+  cout<<"A with 0="<<endl;
+  for(int i=0;i<Z;i++){
+    for(int j=0;j<Z;j++){
+      if(i<N && j<M){
+        AA[i][j]=*(A+M*i+j);
+      }else{
+        AA[i][j]=0;
+      }
+      cout<<setw(4)<<AA[i][j];
+    }
+    cout<<endl;
+  }
+  cout<<"B with 0="<<endl;
+  for(int i=0;i<Z;i++){
+    for(int j=0;j<Z;j++){
+      if(i<M && j<K){
+        BB[i][j]=*(B+K*i+j);
+      }else{
+        BB[i][j]=0;
+      }
+      cout<<setw(4)<<BB[i][j];
+    }
+    cout<<endl;
+  }
+
+  multiply(&AA[0][0],&BB[0][0],&CC[0][0],Z);
+  cout<<"(A with 0)*(B with 0)="<<endl;
+  for(int i=0;i<Z;i++){
+    for(int j=0;j<Z;j++){
+      cout<<setw(4)<<CC[i][j];
+    }
+    cout<<endl;
+  }
+
+
+  //put ans into C
+  for(int i=0;i<N;i++){
+    for(int j=0;j<K;j++){
+      *(C+i*K+j)=CC[i][j];
+    }
+  }
+
+
+}
+
+
 int main(){
-  int N=4;
-  int A[N][N]={{6,5,1,2},{52,2,4,6},{51,1,3,6},{5,1,3,6}};
-  int B[N][N]={{5,1,3,7},{6,4,1,3},{5,1,3,4},{5,5,3,1}};
-  int C[N][N];
+  int M,N,K;
+  cout<<"A(M rows N columns) * B(K rows M columns) = C(K rows N columns)"<<endl;
+  cout<<"input M=?"<<endl;
+  cin>>M;
+  cout<<"input N=?"<<endl;
+  cin>>N;
+  cout<<"input K=?"<<endl;
+  cin>>K;
+
+  int A[N][M];
+  int B[M][K];
+  int C[N][K];
+  for(int i=0;i<N;i++){
+    for(int j=0;j<M;j++){
+      cout<<"A["<<i<<"]["<<j<<"]=?"<<endl;
+      cin>>A[i][j];
+    }
+  }
+  for(int i=0;i<M;i++){
+    for(int j=0;j<K;j++){
+      cout<<"B["<<i<<"]["<<j<<"]=?"<<endl;
+      cin>>B[i][j];
+    }
+  }
 
 
 
 
-  multiply(&A[0][0],&B[0][0],&C[0][0],N);
-  print_Maxtrix(&A[0][0],N);
-  print_Maxtrix(&B[0][0],N);
-  print_Maxtrix(&C[0][0],N);
 
 
+  Strassen(&A[0][0],&B[0][0],&C[0][0], M, N, K);
 
-
+  cout<<"Ans: C=A*B="<<endl;
+  for(int i=0;i<N;i++){
+    for(int j=0;j<K;j++){
+      cout<<setw(4)<<C[i][j];
+    }
+    cout<<endl;
+  }
 
   return 0;
 }

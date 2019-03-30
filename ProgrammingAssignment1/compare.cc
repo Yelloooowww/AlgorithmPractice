@@ -1,38 +1,27 @@
 #include<iostream>
+#include<iomanip>
+#include<cstdlib>
+#include<ctime>
+#include<fstream>
+#include<sstream>
 using namespace std;
-
-void print_Maxtrix(int *A,int n){
-  for(int i=0;i<n;i++){
-    for(int j=0;j<n;j++){
-      cout<<*(A+i*n+j)<<"("<< (A+i*n+j)<<")"<<" ";
-    }
-    cout<<endl;
-  }
-}
 
 void add(int *A,int *B,int *C,int size){
   for(int i=0;i<size;i++){
     *(C+i)= *(A+i)+ *(B+i);
-    cout<<"add:"<< *(A+i)<<"+"<<*(B+i)<<"="<< *(C+i)<<endl;
   }
 }
 void sub(int *A,int *B,int *C,int size){
   for(int i=0;i<size;i++){
     *(C+i)= *(A+i)- *(B+i);
-    cout<<"sub:"<< *(A+i)<<"-"<<*(B+i)<<"="<< *(C+i)<<endl;
   }
 }
 
 
 
 void multiply(int *A,int *B,int *C,int n){
-  cout<<"START multiply~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~n="<<n<<endl;
-  print_Maxtrix(A,n);
-  print_Maxtrix(B,n);
-  cout<<"START multiply~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~n="<<n<<endl;
   if(n<=1){
     *C = (*A)*(*B);
-    cout<<"*C="<<*C<<"="<<(*A)<<"*"<<(*B)<<endl;
     return;
   }else if(n>1){
     int M1[n*n/4];
@@ -85,50 +74,44 @@ void multiply(int *A,int *B,int *C,int n){
       }
     }
 
-    // for(int i=0;i<(n*n/4);i++){
-    //   cout<<A11[i]<<"? ";
-    //   cout<<A12[i]<<"? ";
-    //   cout<<A21[i]<<"? ";
-    //   cout<<A22[i]<<"? ";
-    //   cout<<endl;
-    // }
+
 
     //make M1~M7
-    cout<<"  M1=(A11+A22)(B11+B22)"<<endl;
+    // cout<<"  M1=(A11+A22)(B11+B22)"<<endl;
     add(A11,A22,tmp1,n*n/4);
     add(B11,B22,tmp2,n*n/4);
     multiply(tmp1,tmp2,M1,n/2);
-    cout<<"  M2=(A21+A22)B11"<<endl;
+    // cout<<"  M2=(A21+A22)B11"<<endl;
     add(A21,A22,tmp1,n*n/4);
     multiply(tmp1,B11,M2,n/2);
-    cout<<"  M3=A11(B12-B22)"<<endl;
+    // cout<<"  M3=A11(B12-B22)"<<endl;
     sub(B12,B22,tmp1,n*n/4);
     multiply(A11,tmp1,M3,n/2);
-    cout<<"  M4=A22(B21-B11)"<<endl;
+    // cout<<"  M4=A22(B21-B11)"<<endl;
     sub(B21,B11,tmp1,n*n/4);
     multiply(A22,tmp1,M4,n/2);
-    cout<<"  M5=(A11+A12)B22"<<endl;
+    // cout<<"  M5=(A11+A12)B22"<<endl;
     add(A11,A12,tmp1,n*n/4);
     multiply(tmp1,B22,M5,n/2);
-    cout<<"  M6=(A21-A11)(B11+B12)"<<endl;
+    // cout<<"  M6=(A21-A11)(B11+B12)"<<endl;
     sub(A21,A11,tmp1,n*n/4);
     add(B11,B12,tmp2,n*n/4);
     multiply(tmp1,tmp2,M6,n/2);
-    cout<<"  M7=(A12-A22)(B21+B22)"<<endl;
+    // cout<<"  M7=(A12-A22)(B21+B22)"<<endl;
     sub(A12,A22,tmp1,n*n/4);
     add(B21,B22,tmp2,n*n/4);
     multiply(tmp1,tmp2,M7,n/2);
 
     //make C11 C12 C21 C22
-    cout<<"   C11=M1+M4-M5+M7"<<endl;
+    // cout<<"   C11=M1+M4-M5+M7"<<endl;
     add(M1,M4,tmp1,n*n/4);
     sub(tmp1,M5,tmp2,n*n/4);
     add(tmp2,M7,C11,n*n/4);
-    cout<<"   C12=M3+M5"<<endl;
+    // cout<<"   C12=M3+M5"<<endl;
     add(M3,M5,C12,n*n/4);
-    cout<<"   C21=M2+M4"<<endl;
+    // cout<<"   C21=M2+M4"<<endl;
     add(M2,M4,C21,n*n/4);
-    cout<<"   C22=M1-M2+M3+M6"<<endl;
+    // cout<<"   C22=M1-M2+M3+M6"<<endl;
     sub(M1,M2,tmp1,n*n/4);
     add(tmp1,M3,tmp2,n*n/4);
     add(tmp2,M6,C22,n*n/4);
@@ -147,30 +130,58 @@ void multiply(int *A,int *B,int *C,int n){
         *(temp_address_C22+j)=C22[i*(n/2)+j];
       }
     }
-
-  }//else if(n>1)
-
-
-
-  print_Maxtrix(C,n);
+  }
 }
 
+
 int main(){
-  int N=4;
-  int A[N][N]={{6,5,1,2},{52,2,4,6},{51,1,3,6},{5,1,3,6}};
-  int B[N][N]={{5,1,3,7},{6,4,1,3},{5,1,3,4},{5,5,3,1}};
-  int C[N][N];
+  ofstream outfile;
+  outfile.open("test_result.txt");
 
 
+  //Start testing~~~
+  for(int n=1;n<501;n++){
+    int A[n][n];
+    int B[n][n];
+    int C[n][n];
+
+    //make data by rand()
+    for(int i=0;i<n;i++){
+      for(int j=0;j<n;j++){
+        A[i][j]=rand()%100;
+        B[i][j]=rand()%100;
+      }
+    }
+
+    int t_Strassen_start=clock();
+    multiply(&A[0][0],&B[0][0],&C[0][0],n);
+    int t_Strassen_end=clock();
+
+    //clean C
+    for(int i=0;i<n;i++){
+      for(int j=0;j<n;j++){
+        C[i][j]=0;
+      }
+    }
+
+    //traditional method~~~
+    int t_tradition_start=clock();
+    for(int i=0;i<n;i++){
+	    for(int j=0;j<n;j++){
+  			for(int k=0;k<n;k++){
+  			    C[i][j]+=A[i][k]*B[k][j];
+  			}
+  		}
+  	}
+    int t_tradition_end=clock();
 
 
-  multiply(&A[0][0],&B[0][0],&C[0][0],N);
-  print_Maxtrix(&A[0][0],N);
-  print_Maxtrix(&B[0][0],N);
-  print_Maxtrix(&C[0][0],N);
+    outfile<<setw(8)<<n<<setw(8)<<t_Strassen_end-t_Strassen_start<<setw(8)<<t_tradition_end-t_tradition_start<<endl;
+    cout<<"n="<<setw(4)<<n<<" t_Strassen="<<setw(4)<<t_Strassen_end-t_Strassen_start<<" t_tradition="<<setw(4)<<t_tradition_end-t_tradition_start<<endl;
 
+  }
 
-
+  outfile.close();
 
 
   return 0;
