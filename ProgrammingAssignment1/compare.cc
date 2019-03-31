@@ -21,7 +21,7 @@ void sub(int *A,int *B,int *C,int size){
 
 void multiply(int *A,int *B,int *C,int n){
   if(n<=1){
-    *C = (*A)*(*B);
+    *C = (*A) * (*B);
     return;
   }else if(n>1){
     int M1[n*n/4];
@@ -46,11 +46,6 @@ void multiply(int *A,int *B,int *C,int n){
     int tmp1[n*n/4];
     int tmp2[n*n/4];
 
-    //tmp1 tmp2 init
-    for(int i=0;i<(n*n/4);i++){
-      *(tmp1+i)=0;
-      *(tmp2+i)=0;
-    }
 
     //divide A to A11 A12 A21 A22 & divide B to B11 B12 B21 B22
     for(int i=0;i<n/2;i++){
@@ -133,14 +128,52 @@ void multiply(int *A,int *B,int *C,int n){
   }
 }
 
+void Strassen(int *A,int *B,int *C,int M,int N,int K){
+  static int Z=1;//2^0
+  while (Z<max(max(M,N),K)) {
+    Z*=2;
+  }
+
+  int AA[Z][Z],BB[Z][Z],CC[Z][Z];
+
+  //fill A & B with 0
+  for(int i=0;i<Z;i++){
+    for(int j=0;j<Z;j++){
+      if(i<N && j<M){
+        AA[i][j]=*(A+M*i+j);
+      }else{
+        AA[i][j]=0;
+      }
+      if(i<M && j<K){
+        BB[i][j]=*(B+K*i+j);
+      }else{
+        BB[i][j]=0;
+      }
+    }
+  }
+
+  multiply(&AA[0][0],&BB[0][0],&CC[0][0],Z);
+
+
+
+  //put ans into C
+  for(int i=0;i<N;i++){
+    for(int j=0;j<K;j++){
+      *(C+i*K+j)=CC[i][j];
+    }
+  }
+
+
+}
 
 int main(){
   ofstream outfile;
   outfile.open("test_result.txt");
+  // outfile<<"   n t_Strassen t_tradition"<<endl;
 
 
   //Start testing~~~
-  for(int n=1;n<501;n++){
+  for(int n=1;n<=1024;n++){
     int A[n][n];
     int B[n][n];
     int C[n][n];
@@ -148,13 +181,13 @@ int main(){
     //make data by rand()
     for(int i=0;i<n;i++){
       for(int j=0;j<n;j++){
-        A[i][j]=rand()%100;
-        B[i][j]=rand()%100;
+        A[i][j]=rand()%101;
+        B[i][j]=rand()%101;
       }
     }
 
     int t_Strassen_start=clock();
-    multiply(&A[0][0],&B[0][0],&C[0][0],n);
+    Strassen(&A[0][0],&B[0][0],&C[0][0], n, n, n);
     int t_Strassen_end=clock();
 
     //clean C
@@ -176,8 +209,10 @@ int main(){
     int t_tradition_end=clock();
 
 
-    outfile<<setw(8)<<n<<setw(8)<<t_Strassen_end-t_Strassen_start<<setw(8)<<t_tradition_end-t_tradition_start<<endl;
-    cout<<"n="<<setw(4)<<n<<" t_Strassen="<<setw(4)<<t_Strassen_end-t_Strassen_start<<" t_tradition="<<setw(4)<<t_tradition_end-t_tradition_start<<endl;
+    outfile<<n<<" "<<t_Strassen_end-t_Strassen_start;
+    outfile<<" "<<t_tradition_end-t_tradition_start<<endl;
+    cout<<"n="<<setw(4)<<n<<" t_Strassen="<<setw(4)<<t_Strassen_end-t_Strassen_start;
+    cout<<" t_tradition="<<setw(4)<<t_tradition_end-t_tradition_start<<endl;
 
   }
 

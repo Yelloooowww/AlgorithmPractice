@@ -45,13 +45,8 @@ void multiply(int *A,int *B,int *C,int n){
     int tmp1[n*n/4];
     int tmp2[n*n/4];
 
-    //tmp1 tmp2 init
-    for(int i=0;i<(n*n/4);i++){
-      *(tmp1+i)=0;
-      *(tmp2+i)=0;
-    }
 
-    //divide A to A11 A12 A21 A22 & divide B to B11 B12 B21 B22
+    //divide A to A11 A12 A21 A22 & divide B to B11 B12 B21 B22 & init tmp1,tmp2
     for(int i=0;i<n/2;i++){
       int* temp_address_A11=A+(0*(n*n/2)+0*(n/2))+i*n;
       int* temp_address_A12=A+(0*(n*n/2)+1*(n/2))+i*n;
@@ -70,6 +65,7 @@ void multiply(int *A,int *B,int *C,int n){
         B12[i*(n/2)+j]= *(temp_address_B12+j);
         B21[i*(n/2)+j]= *(temp_address_B21+j);
         B22[i*(n/2)+j]= *(temp_address_B22+j);
+
       }
     }
 
@@ -141,6 +137,7 @@ void Strassen(int *A,int *B,int *C,int M,int N,int K){
   }
 
   int AA[Z][Z],BB[Z][Z],CC[Z][Z];
+  //fill A & B with 0
   cout<<"A with 0="<<endl;
   for(int i=0;i<Z;i++){
     for(int j=0;j<Z;j++){
