@@ -7,6 +7,7 @@
 using namespace std;
 
 string input;
+string output;
 vector<int> Num;
 vector<char> Operator;
 
@@ -44,6 +45,28 @@ int calculation(int n1,char op,int n2){
   }
 }
 
+string int_to_string(int n){
+  string s="";
+  while(n){
+    s.insert(s.begin(),n%10+48);
+    n=n/10;
+  }
+  return s;
+}
+
+void Ans(int *p,int *k,int size,int start,int end){
+  if(end==start){
+    cout<<int_to_string( *(p+start*(size+1)+end) );
+  }else{
+    int divide= *(k+start*(size+1)+end);
+    cout<<"(";
+    Ans(p,k,size,start,divide);
+    cout<<Operator[divide];
+    Ans(p,k,size,divide+1,end);
+    cout<<")";
+  }
+
+}
 
 
 int MaxCalculation(int *Number,char *Op,int size){
@@ -84,9 +107,10 @@ int MaxCalculation(int *Number,char *Op,int size){
     }
   }
 
-
+  output="";
+  Ans(&p[0][0],&k[0][0],size,1,size);
   //print Ans~~~~~~~~~~~~~~~~~~~~~~~
-  cout<<"p:"<<endl;
+  cout<<endl<<"p:"<<endl;
   for(int i=1;i<=size;i++){
     for(int j=1;j<=size;j++){
       if(j>=i) cout<<setw(5)<<p[i][j];
@@ -119,10 +143,5 @@ int main(){
 
 
   }
-
-
-
-
-
   return 0;
 }
