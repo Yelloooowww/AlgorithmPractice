@@ -67,7 +67,7 @@ void Ans(int *p,int *k,int size,int start,int end){
     }else if(Operator[divide]=='*' ){
       flag=1;
     }else if(Operator[divide]=='+' || Operator[divide]=='-'){
-      if(Operator[end]!='*' && Operator[start-1]!='*') flag=1;
+      if(Operator[divide+1]!='*' && Operator[divide-1]!='*') flag=1;
     }
 
     if(flag==0) cout<<"(";
@@ -80,7 +80,7 @@ void Ans(int *p,int *k,int size,int start,int end){
 }
 
 
-int MaxCalculation(int *Number,char *Op,int size){
+void MaxCalculation(int *Number,char *Op,int size){
   int p[size+1][size+1];//the result of each fractional calculation
   int k[size+1][size+1];//divide method
   int Num[size+1];//there are n integer,n=size.
