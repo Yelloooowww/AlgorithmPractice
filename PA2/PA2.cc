@@ -35,12 +35,12 @@ void deal_with_input(){
 }
 
 int calculation(int n1,char op,int n2){
-  assert(op=='+' ||op=='-' || op=='*'|| op=='/');
+  //only accept +-*
+  assert(op=='+' ||op=='-' || op=='*');
   switch (op) {
     case '+': return n1+n2;
     case '-': return n1-n2;
     case '*': return n1*n2;
-    case '/': return n1/n2;
   }
 }
 
@@ -56,9 +56,12 @@ string int_to_string(int n){
 void Ans(int *p,int *k,int size,int start,int end){
   if(end==start){
     cout<<int_to_string( *(p+start*(size+1)+end) );
+    return;
   }else{
-    char flag=0;// 0->()   1->no ()
+    char flag=0;// 0->()   1->no()
     int divide= *(k+start*(size+1)+end);
+
+    //some case which don't need ()
     if(start==1 && end==size) {
       flag=1;
     }else if(Operator[divide]=='*' ){
@@ -78,7 +81,7 @@ void Ans(int *p,int *k,int size,int start,int end){
 
 
 int MaxCalculation(int *Number,char *Op,int size){
-  int p[size+1][size+1];//the result of each calculation
+  int p[size+1][size+1];//the result of each fractional calculation
   int k[size+1][size+1];//divide method
   int Num[size+1];//there are n integer,n=size.
   char Operator[size];//there are n operator,n=size-1.
@@ -90,7 +93,7 @@ int MaxCalculation(int *Number,char *Op,int size){
 
 
 
-  for(int i=1;i<=size;i++) p[i][i]=Num[i];//init p[][] when i==j
+  for(int i=1;i<=size;i++) p[i][i]=Num[i];//initial p[][] when i==j
 
   for(int line=1;line<=size-1;line++){
     int i=1;
@@ -147,8 +150,8 @@ int main(){
     cout<<"input"<<endl;
     cin>>input;
 
-    deal_with_input();//put into data structure
-    MaxCalculation(&(Num[0]),&(Operator[0]),Num.size()-1);
+    deal_with_input();//analysis what user input ans put them into data structure
+    MaxCalculation(&(Num[0]),&(Operator[0]),Num.size()-1);//a DP algorithm
 
 
 
