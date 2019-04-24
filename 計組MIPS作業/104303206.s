@@ -27,7 +27,7 @@ L2:
         #   if (n%tmp==0) return False;
         #   tmp++;
         # return True;
-        
+
         addi  $t0, $zero, 2       # $t0=2  (int tmp=2)
         j     LOOP                # go to LOOP
 LOOP:
@@ -77,4 +77,4 @@ Exit:
 input:	.asciiz "Input: "
 true: 	.asciiz "True"
 false:  .asciiz "False"
-err:    .asciiz "Input Error???"
+err:    .asciiz "Please input a num >1 !!!"
