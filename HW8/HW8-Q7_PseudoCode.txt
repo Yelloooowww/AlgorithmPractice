@@ -1,0 +1,17 @@
+DFS_Low(u) {
+	Low[u] = d[u] = ++time
+	for each v in Adj[u]
+		if v haven't been seen yet
+			pred[v] = u
+			DFS_Low(v)
+			Low[u] = min(Low[u],Low[v])
+		else if v != pred[u]			// Back_edge
+			Low[u] = min(Low[u],d[v])
+}
+Find_Bridge {
+	for each v in V
+		u = pred[v]
+		if u != Nil and d[v]==Low[v]
+			edge(u,v) is bridge
+}
+
