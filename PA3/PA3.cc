@@ -1,82 +1,62 @@
 #include<iostream>
-#include<string>
-#include<vector>
+#include<queue>
 using namespace std;
 
-struct job{
-  int id;
+class job{
+private:
   int time;
   int deadline;
+public:
+  job(int t,int d):time(t),deadline(d){}
+  int get_time(){return time;}
+  int get_deadline(){return deadline;}
+  friend bool operator> (const job& a, const job& b){
+    return a.deadline > b.deadline;
+  }
+  friend bool operator< (const job& a, const job& b){
+    return a.time < b.time;
+  }
+  friend ostream& operator<< (ostream& out,const job& foo){
+    return out<<"time("<<foo.time<<")deadline("<<foo.deadline<<")";
+  }
 };
 
-
-void SortByTime(job S[],int N){
-  for(int i=0;i<N;i++){
-    for(int j=0;j<N-i;j++){
-      if((S[j]).time>(S[j+1]).time){
-        job tmp=S[j];
-        S[j]=S[j+1];
-        S[j+1]=tmp;
-      }
+class schedule{
+private:
+  priority_queue<job> J;
+  int total_time;
+public:
+  schedule(int t=0):total_time(t){}
+  void add_job(job foo){
+    J.push(foo);
+    total_time+= foo.get_time();
+    if(total_time> foo.get_deadline()){
+      job tmp=J.top();
+      total_time -=tmp.get_time();
+      J.pop();
     }
   }
-}
-
-bool IsFeasibleSet(job K[],int N){
-  if(N==1) return 1;
-
-  for(int i=N-1;i>0;i--){
-    if((K[i]).deadline<(K[i-1]).deadline){
-      job tmp=K[i];
-      K[i]=K[i-1];
-      K[i-1]=tmp;
-    }
-  }
-
-  int tmp=0;
-  for(int i=0;i<N;i++) tmp += K[i].time;
-  return ((tmp<=K[N-1].deadline)?1:0);
-
-}
-
-
-int schedule(job S[],int N){
-  int total_time=0;
-  int num=0;
-  job J[N];
-  job K[N];
-
-  for(int i=0;i<N;i++){
-    K[num]=S[i];
-
-    if( IsFeasibleSet(K,num+1)){
-      num++;
-      for(int i=0;i<num;i++) J[i]=K[i];
-    }else{
-      for(int i=0;i<num;i++) K[i]=J[i];
-    }
-  }
-
-
-  return num;
-}
+  int get_num(){return J.size();}
+};
 
 int main(){
   while(1){
     int N;
     cout<<"Input:"<<endl;
     cin>>N;
-    job S[N];
+
+    priority_queue< job,deque<job>,greater<job> > S;
     for(int i=0;i<N;i++){
       int tmp1,tmp2;
       cin>>tmp1>>tmp2;
-      (S[i]).id=i+1;
-      (S[i]).time=tmp1;
-      (S[i]).deadline=tmp2;
+      S.push(job(tmp1,tmp2));
     }
 
-    SortByTime(S,N);
-    int MaxProfit=schedule(S,N);
-    cout<<"Maximum Profit="<<MaxProfit<<endl;
+    schedule MaxProfit;
+    while (!S.empty()) {
+      MaxProfit.add_job(S.top());
+      S.pop();
+    }
+    cout<<"Maximum Profix="<<MaxProfit.get_num()<<endl;
   }
 }
