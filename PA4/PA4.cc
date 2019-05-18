@@ -32,8 +32,11 @@ struct graph{
   void PrintAns(){
     if(!(ExistNegativeCycle==1 || ExistNegativeCycle==0)) cout<<"ERROR"<<endl;
     if(ExistNegativeCycle==1) cout<<"There is a negative weight cycle."<<endl;
-    while (!AnsPath.empty()){
+
+    vertex haveprint[V];
+    while (!AnsPath.empty()  &&haveprint[AnsPath.top()]!=1){
       cout<<AnsPath.top()<<" ";
+      haveprint[AnsPath.top()]=1;
       AnsPath.pop();
     }
     if(ExistNegativeCycle==0) cout<<endl<<AnsWeight<<endl;
@@ -85,15 +88,14 @@ graph BellmanFord(graph G,vertex s,vertex destination){
     if(G.d[v]> (G.d[u]+w[u][v])){
       int HaveFinded[G.V];
       G.AnsPath.push(v);
-      G.AnsWeight =w[u][v];
       HaveFinded[v]=1;
       while(HaveFinded[u]!=1){
         v=u;
         u=G.pi[v];
         G.AnsPath.push(v);
-        G.AnsWeight +=w[u][v];
         HaveFinded[v]=1;
       }
+      G.AnsPath.push(u);
       G.ExistNegativeCycle=1;
       return G;
     }
@@ -173,15 +175,14 @@ graph modified_BellmanFord(graph G,vertex s,vertex destination){
       if(G.d[v]> (G.d[u]+w[u][v])){
         int HaveFinded[G.V];
         G.AnsPath.push(v);
-        G.AnsWeight =w[u][v];
         HaveFinded[v]=1;
         while(HaveFinded[u]!=1){
           v=u;
           u=G.pi[v];
           G.AnsPath.push(v);
-          G.AnsWeight +=w[u][v];
           HaveFinded[v]=1;
         }
+        G.AnsPath.push(u);
         G.ExistNegativeCycle=1;
         return G;
       }
