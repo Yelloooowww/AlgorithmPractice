@@ -1,6 +1,8 @@
 #include<iostream>
 #include<vector>
 #include<stack>
+#include<queue>
+#include<list>
 #include<ctime>
 using namespace std;
 #define Infinite 2147483647
@@ -56,10 +58,14 @@ graph BellmanFord(graph G,vertex s,vertex destination){
       else w[i][j]=Infinite;
     }
   }
+
+  vector<vertex> adj[G.V];
+  for(int i=0;i<G.V;i++) adj[i].clear();
   for(int j=0;j<G.E;j++){
     vertex u=G.Edges[j].from;
     vertex v=G.Edges[j].to;
     w[u][v]=G.Edges[j].weight;
+    adj[u].push_back(v);
   }
   //initialize done
 
@@ -91,12 +97,109 @@ graph BellmanFord(graph G,vertex s,vertex destination){
         G.AnsWeight +=w[u][v];
         HaveFinded[v]=1;
       }
-
-
       G.ExistNegativeCycle=1;
       return G;
     }
   }
+
+  //No negative weight cycle. Start to print the shortest path.
+  G.clearAns();
+  vertex now=destination;
+  vertex last=G.pi[now];
+  while(now!=s){
+    G.AnsWeight += w[last][now];
+    G.AnsPath.push(now);
+    now=last;
+    last=G.pi[now];
+  }
+  G.AnsPath.push(s);
+  G.ExistNegativeCycle=0;
+  return G;
+}
+
+
+
+
+graph modified_BellmanFord(graph G,vertex s,vertex destination){
+  //initialize
+  for(int i=0;i<G.V;i++){
+    G.d.push_back(Infinite);
+    G.pi.push_back(-1);
+  }
+  G.d[s]=0;
+  int w[G.V][G.V];
+  for(int i=0;i<G.V;i++){
+    for(int j=0;j<G.V;j++) {
+      if(i==j) w[i][j]=0;
+      else w[i][j]=Infinite;
+    }
+  }
+
+  vector<vertex> adj[G.V];
+  for(int i=0;i<G.V;i++) adj[i].clear();
+  for(int j=0;j<G.E;j++){
+    vertex u=G.Edges[j].from;
+    vertex v=G.Edges[j].to;
+    w[u][v]=G.Edges[j].weight;
+    adj[u].push_back(v);
+  }
+  //initialize done
+
+
+  queue<vertex> Q;
+  int color[G.V];//1->have been pushud into Q
+  Q.push(s);
+  color[s]=1;
+  while (!Q.empty()) {
+    vertex u=Q.front();
+    Q.pop();
+    for(int i=0;i<adj[u].size();i++){
+      vertex v=adj[u][i];
+      if(G.d[v]> (G.d[u]+w[u][v])){
+        G.d[v]= (G.d[u]+w[u][v]);
+        G.pi[v]=u;
+      }
+      if(color[v]!=1){
+        Q.push(v);
+        color[v]=1;
+      }
+    }
+  }
+
+
+  //check if there exist a negative weight cycle?
+  queue<vertex> Q_;
+  int color_[G.V];//1->have been pushud into Q
+  Q_.push(s);
+  color_[s]=1;
+  while (!Q_.empty()) {
+    vertex u=Q_.front();
+    Q_.pop();
+    for(int i=0;i<adj[u].size();i++){
+      vertex v=adj[u][i];
+      if(G.d[v]> (G.d[u]+w[u][v])){
+        G.clearAns();
+        int HaveFinded[G.V];
+        G.AnsPath.push(v);
+        G.AnsWeight =w[u][v];
+        HaveFinded[v]=1;
+        while(HaveFinded[u]!=1){
+          v=u;
+          u=G.pi[v];
+          G.AnsPath.push(v);
+          G.AnsWeight +=w[u][v];
+          HaveFinded[v]=1;
+        }
+        G.ExistNegativeCycle=1;
+        return G;
+      }
+      if(color_[v]!=1){
+        Q_.push(v);
+        color_[v]=1;
+      }
+    }
+  }
+
 
 
   //No negative weight cycle. Start to print the shortest path.
@@ -112,9 +215,17 @@ graph BellmanFord(graph G,vertex s,vertex destination){
   G.AnsPath.push(s);
   G.ExistNegativeCycle=0;
   return G;
-
-
 }
+
+
+
+
+
+
+
+
+
+
 
 int main(){
   //input start
@@ -131,12 +242,21 @@ int main(){
   }
   //input finish
 
+
+  //test original vertion
   double t=clock();
   for(int i=0;i<1000;i++) G=BellmanFord(G,sourse,destination);
   t=clock()-t;
   cout<<"original time: "<<1000*t/(1000*CLOCKS_PER_SEC)<<" ms"<<endl;
+  // G.PrintAns();
+
+
+  //test modified vertion
+  t=clock();
+  for(int i=0;i<1000;i++) G=modified_BellmanFord(G,sourse,destination);
+  t=clock()-t;
+  cout<<"modified time: "<<1000*t/(1000*CLOCKS_PER_SEC)<<" ms"<<endl;
+  // G=modified_BellmanFord(G,sourse,destination);
   G.PrintAns();
-
-
 
 }
