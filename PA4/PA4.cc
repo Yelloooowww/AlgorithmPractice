@@ -5,7 +5,7 @@
 #include<list>
 #include<ctime>
 using namespace std;
-#define Infinite 2147483647
+#define Infinite 99999
 
 typedef int vertex;
 struct edge{
@@ -33,8 +33,8 @@ struct graph{
     if(!(ExistNegativeCycle==1 || ExistNegativeCycle==0)) cout<<"ERROR"<<endl;
     if(ExistNegativeCycle==1) cout<<"There is a negative weight cycle."<<endl;
 
-    vertex haveprint[V];
-    while (!AnsPath.empty()  &&haveprint[AnsPath.top()]!=1){
+    bool haveprint[V];for(int i=0;i<V;i++) haveprint[i]=0;
+    while (!AnsPath.empty()  &&(!haveprint[AnsPath.top()])){
       cout<<AnsPath.top()<<" ";
       haveprint[AnsPath.top()]=1;
       AnsPath.pop();
@@ -44,11 +44,11 @@ struct graph{
 };
 
 
-graph BellmanFord(graph& G,vertex& s,vertex& destination){
+bool BellmanFord(graph& G,vertex& s,vertex& destination){
   //initialize
   for(int i=0;i<G.V;i++){
     G.d.push_back(Infinite);
-    G.pi.push_back(-1);
+    G.pi.push_back(-Infinite);
   }
   G.d[s]=0;
   int w[G.V][G.V];
@@ -86,7 +86,7 @@ graph BellmanFord(graph& G,vertex& s,vertex& destination){
     vertex u=G.Edges[j].from;
     vertex v=G.Edges[j].to;
     if(G.d[v]> (G.d[u]+w[u][v])){
-      int HaveFinded[G.V];
+      bool HaveFinded[G.V];for(int i=0;i<G.V;i++) HaveFinded[i]=0;
       G.AnsPath.push(v);
       HaveFinded[v]=1;
       while(HaveFinded[u]!=1){
@@ -97,7 +97,7 @@ graph BellmanFord(graph& G,vertex& s,vertex& destination){
       }
       G.AnsPath.push(u);
       G.ExistNegativeCycle=1;
-      return G;
+      return 0;
     }
   }
 
@@ -112,15 +112,15 @@ graph BellmanFord(graph& G,vertex& s,vertex& destination){
   }
   G.AnsPath.push(s);
   G.ExistNegativeCycle=0;
-  return G;
+  return 1;
 }
 
 
-graph modified_BellmanFord(graph& G,vertex& s,vertex& destination){
+bool modified_BellmanFord(graph& G,vertex& s,vertex& destination){
   //initialize
   for(int i=0;i<G.V;i++){
     G.d.push_back(Infinite);
-    G.pi.push_back(-1);
+    G.pi.push_back(-Infinite);
   }
   G.d[s]=0;
   int w[G.V][G.V];
@@ -143,7 +143,8 @@ graph modified_BellmanFord(graph& G,vertex& s,vertex& destination){
 
   //edit d & pi
   queue<vertex> Q;
-  int color[G.V];//1->have been pushud into Q
+  bool color[G.V];for(int i=0;i<G.V;i++) color[i]=0;
+  //color=1 -> have been pushud into Q
   Q.push(s);
   color[s]=1;
   while (!Q.empty()) {
@@ -164,7 +165,8 @@ graph modified_BellmanFord(graph& G,vertex& s,vertex& destination){
 
   //check if there exist a negative weight cycle?
   queue<vertex> Q_;
-  int color_[G.V];//1->have been pushud into Q
+  int color_[G.V];for(int i=0;i<G.V;i++) color_[i]=0;
+  //1->have been pushud into Q
   Q_.push(s);
   color_[s]=1;
   while (!Q_.empty()) {
@@ -184,7 +186,7 @@ graph modified_BellmanFord(graph& G,vertex& s,vertex& destination){
         }
         G.AnsPath.push(u);
         G.ExistNegativeCycle=1;
-        return G;
+        return 0;
       }
       if(color_[v]!=1){
         Q_.push(v);
@@ -204,7 +206,7 @@ graph modified_BellmanFord(graph& G,vertex& s,vertex& destination){
   }
   G.AnsPath.push(s);
   G.ExistNegativeCycle=0;
-  return G;
+  return 1;
 }
 
 
@@ -226,7 +228,7 @@ int main(){
 
   //test original vertion
   double t=clock();
-  for(int i=0;i<1000;i++) G=BellmanFord(G,sourse,destination);
+  for(int i=0;i<1000;i++) BellmanFord(G,sourse,destination);
   t=clock()-t;
   cout<<"original time: "<<1000*t/(1000*CLOCKS_PER_SEC)<<" ms"<<endl;
   // G.PrintAns();
@@ -234,7 +236,7 @@ int main(){
 
   //test modified vertion
   t=clock();
-  for(int i=0;i<1000;i++) G=modified_BellmanFord(G,sourse,destination);
+  for(int i=0;i<1000;i++) modified_BellmanFord(G,sourse,destination);
   t=clock()-t;
   cout<<"modified time: "<<1000*t/(1000*CLOCKS_PER_SEC)<<" ms"<<endl;
   G.PrintAns();
