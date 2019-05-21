@@ -44,7 +44,7 @@ struct graph{
 };
 
 
-graph BellmanFord(graph G,vertex s,vertex destination){
+graph BellmanFord(graph& G,vertex& s,vertex& destination){
   //initialize
   for(int i=0;i<G.V;i++){
     G.d.push_back(Infinite);
@@ -116,7 +116,7 @@ graph BellmanFord(graph G,vertex s,vertex destination){
 }
 
 
-graph modified_BellmanFord(graph G,vertex s,vertex destination){
+graph modified_BellmanFord(graph& G,vertex& s,vertex& destination){
   //initialize
   for(int i=0;i<G.V;i++){
     G.d.push_back(Infinite);
