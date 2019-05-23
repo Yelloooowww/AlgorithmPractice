@@ -51,12 +51,14 @@ bool BellmanFord(graph& G,vertex& s,vertex& destination){
     G.pi.push_back(-Infinite);
   }
   G.d[s]=0;
-  int w[G.V][G.V];
+  vector< vector<int> > w;
   for(int i=0;i<G.V;i++){
+    vector<int> tmp;
     for(int j=0;j<G.V;j++) {
-      if(i==j) w[i][j]=0;
-      else w[i][j]=Infinite;
+      if(i==j) tmp.push_back(0);//w[i][j]=0;
+      else tmp.push_back(Infinite);//w[i][j]=Infinite;
     }
+    w.push_back(tmp);
   }
   vector<vertex> adj[G.V];
   for(int i=0;i<G.V;i++) adj[i].clear();
@@ -123,12 +125,14 @@ bool modified_BellmanFord(graph& G,vertex& s,vertex& destination){
     G.pi.push_back(-Infinite);
   }
   G.d[s]=0;
-  int w[G.V][G.V];
+  vector< vector<int> > w;
   for(int i=0;i<G.V;i++){
+    vector<int> tmp;
     for(int j=0;j<G.V;j++) {
-      if(i==j) w[i][j]=0;
-      else w[i][j]=Infinite;
+      if(i==j) tmp.push_back(0);//w[i][j]=0;
+      else tmp.push_back(Infinite);//w[i][j]=Infinite;
     }
+    w.push_back(tmp);
   }
   vector<vertex> adj[G.V];
   for(int i=0;i<G.V;i++) adj[i].clear();
@@ -228,16 +232,16 @@ int main(){
 
   //test original vertion
   double t=clock();
-  for(int i=0;i<1000;i++) BellmanFord(G,sourse,destination);
+  for(int i=0;i<500;i++) BellmanFord(G,sourse,destination);
   t=clock()-t;
-  cout<<"original time: "<<1000*t/(1000*CLOCKS_PER_SEC)<<" ms"<<endl;
+  cout<<"original time: "<<1000*t/(500*CLOCKS_PER_SEC)<<" ms"<<endl;
   // G.PrintAns();
 
 
   //test modified vertion
   t=clock();
-  for(int i=0;i<1000;i++) modified_BellmanFord(G,sourse,destination);
+  for(int i=0;i<500;i++) modified_BellmanFord(G,sourse,destination);
   t=clock()-t;
-  cout<<"modified time: "<<1000*t/(1000*CLOCKS_PER_SEC)<<" ms"<<endl;
+  cout<<"modified time: "<<1000*t/(500*CLOCKS_PER_SEC)<<" ms"<<endl;
   G.PrintAns();
 }
