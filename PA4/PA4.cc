@@ -232,16 +232,16 @@ int main(){
 
   //test original vertion
   double t=clock();
-  for(int i=0;i<500;i++) BellmanFord(G,sourse,destination);
+  BellmanFord(G,sourse,destination);
   t=clock()-t;
-  cout<<"original time: "<<1000*t/(500*CLOCKS_PER_SEC)<<" ms"<<endl;
+  cout<<"original time: "<<1000*t/CLOCKS_PER_SEC<<" ms"<<endl;
   // G.PrintAns();
 
 
   //test modified vertion
   t=clock();
-  for(int i=0;i<500;i++) modified_BellmanFord(G,sourse,destination);
+  modified_BellmanFord(G,sourse,destination);
   t=clock()-t;
-  cout<<"modified time: "<<1000*t/(500*CLOCKS_PER_SEC)<<" ms"<<endl;
+  cout<<"modified time: "<<1000*t/CLOCKS_PER_SEC<<" ms"<<endl;
   G.PrintAns();
 }
